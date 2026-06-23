@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>PlaceAI – Smart Placement Prediction</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="landing-body">
+
+<nav class="navbar">
+  <div class="nav-brand">🎓 PlaceAI</div>
+  <div class="nav-links">
+    <a href="{{ url_for('student_login') }}" class="nav-btn">Student Login</a>
+    <a href="{{ url_for('admin_login') }}" class="nav-btn nav-btn-outline">Admin Login</a>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="hero-content">
+    <div class="hero-badge">🤖 Powered by Machine Learning</div>
+    <h1 class="hero-title">Predict Your<br><span class="gradient-text">Placement Chances</span></h1>
+    <p class="hero-subtitle">
+      Enter your academic scores, skills, and experience — our AI model will
+      instantly predict your placement probability and recommend the best companies
+      and career paths for you.
+    </p>
+    <div class="hero-actions">
+      <a href="{{ url_for('student_register') }}" class="btn-primary">Get Started Free →</a>
+      <a href="{{ url_for('student_login') }}" class="btn-secondary">Already have an account?</a>
+    </div>
+  </div>
+  <div class="hero-visual">
+    <div class="stat-float stat1"><span class="sf-num">87%</span><span class="sf-label">Accuracy</span></div>
+    <div class="stat-float stat2"><span class="sf-num">500+</span><span class="sf-label">Students</span></div>
+    <div class="stat-float stat3"><span class="sf-num">AI</span><span class="sf-label">Powered</span></div>
+    <div class="hero-circle">
+      <div class="circle-inner">
+        <div class="ci-icon">🎯</div>
+        <div class="ci-text">Smart Prediction</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="features-section">
+  <h2 class="section-heading">Why PlaceAI?</h2>
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="fc-icon">🧠</div>
+      <h3>ML-Powered Analysis</h3>
+      <p>Random Forest model trained on real placement data gives you accurate predictions.</p>
+    </div>
+    <div class="feature-card">
+      <div class="fc-icon">📊</div>
+      <h3>Skill Assessment</h3>
+      <p>DSA, communication, projects and internships all factored into your score.</p>
+    </div>
+    <div class="feature-card">
+      <div class="fc-icon">🏢</div>
+      <h3>Company Matching</h3>
+      <p>Get matched to companies that align with your current profile level.</p>
+    </div>
+    <div class="feature-card">
+      <div class="fc-icon">📄</div>
+      <h3>PDF Report</h3>
+      <p>Download a detailed placement analysis report to share with mentors.</p>
+    </div>
+    <div class="feature-card">
+      <div class="fc-icon">📈</div>
+      <h3>Track Progress</h3>
+      <p>Re-predict anytime and see how your placement score improves over time.</p>
+    </div>
+    <div class="feature-card">
+      <div class="fc-icon">🔐</div>
+      <h3>Secure & Private</h3>
+      <p>Your data is stored securely. Only you can view your predictions.</p>
+    </div>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <p>© 2024 PlaceAI – Student Placement Prediction System &nbsp;|&nbsp;
+     <a href="{{ url_for('admin_login') }}">Admin Panel</a></p>
+</footer>
+
+</body>
+</html>

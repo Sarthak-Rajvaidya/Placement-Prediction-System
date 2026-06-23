@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Prediction History – PlaceAI</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="dash-body">
+
+<nav class="dash-nav">
+  <div class="nav-brand">🎓 PlaceAI</div>
+  <div class="nav-center">My Prediction History</div>
+  <div class="nav-links">
+    <a href="{{ url_for('student_dashboard') }}" class="nav-btn">Dashboard</a>
+    <a href="{{ url_for('predict_form') }}" class="nav-btn">New Prediction</a>
+    <a href="{{ url_for('student_logout') }}" class="nav-btn nav-btn-outline">Logout</a>
+  </div>
+</nav>
+
+<div class="dash-container">
+  <div class="dash-welcome">
+    <h1>📋 My Prediction History</h1>
+    <p>All your past placement predictions</p>
+  </div>
+
+  {% if rows %}
+  <div class="dashboard-box">
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr><th>#</th><th>Date & Time</th><th>Prediction</th><th>Probability</th><th>Degree %</th><th>Skills</th></tr>
+        </thead>
+        <tbody>
+        {% for row in rows %}
+        <tr>
+          <td>{{ row['id'] }}</td>
+          <td>{{ row['date'][:16] }}</td>
+          <td>
+            <span class="badge {% if 'LIKELY' in row['prediction'] %}badge-green{% else %}badge-red{% endif %}">
+              {{ row['prediction'] }}
+            </span>
+          </td>
+          <td><strong style="font-size:1.1em">{{ row['probability'] }}%</strong></td>
+          <td>{{ row['degree_p'] or '—' }}</td>
+          <td>Tech: {{ row['skills_rating'] }}/10 | DSA: {{ row['dsa_rating'] }}/10</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  {% else %}
+  <div class="empty-state">
+    <div class="es-icon">📋</div>
+    <h3>No predictions yet!</h3>
+    <p>Take your first placement prediction test.</p>
+    <a href="{{ url_for('predict_form') }}" class="btn-primary">Start Now</a>
+  </div>
+  {% endif %}
+</div>
+</body>
+</html>

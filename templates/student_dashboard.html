@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>My Dashboard – PlaceAI</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="dash-body">
+
+<nav class="dash-nav">
+  <div class="nav-brand">🎓 PlaceAI</div>
+  <div class="nav-center">Student Dashboard</div>
+  <div class="nav-links">
+    <a href="{{ url_for('predict_form') }}" class="nav-btn">New Prediction</a>
+    <a href="{{ url_for('history') }}" class="nav-btn">History</a>
+    <a href="{{ url_for('student_logout') }}" class="nav-btn nav-btn-outline">Logout</a>
+  </div>
+</nav>
+
+<div class="dash-container">
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+  {% for cat, msg in messages %}
+  <div class="alert alert-{{ cat }}">{{ msg }}</div>
+  {% endfor %}
+  {% endwith %}
+
+  <div class="dash-welcome">
+    <h1>Welcome back, {{ session.student_name }} 👋</h1>
+    <p>Here's your placement journey at a glance.</p>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-icon">📊</div>
+      <div class="stat-num">{{ total }}</div>
+      <div class="stat-label">Total Predictions</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">✅</div>
+      <div class="stat-num">{{ placed }}</div>
+      <div class="stat-label">Times Likely Placed</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">🏆</div>
+      <div class="stat-num">{{ best }}%</div>
+      <div class="stat-label">Best Score</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">🎯</div>
+      <div class="stat-num">{{ "%.0f"|format((placed/total*100) if total>0 else 0) }}%</div>
+      <div class="stat-label">Success Rate</div>
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <div class="cta-box">
+    <div>
+      <h2>Ready for your next prediction?</h2>
+      <p>Update your skills and see how your chances have improved.</p>
+    </div>
+    <a href="{{ url_for('predict_form') }}" class="btn-primary">🚀 Predict Now</a>
+  </div>
+
+  <!-- Recent History -->
+  <div class="dash-section">
+    <h2 class="section-title">📋 Recent Predictions</h2>
+    {% if history %}
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr><th>#</th><th>Date</th><th>Prediction</th><th>Probability</th><th>Action</th></tr>
+        </thead>
+        <tbody>
+        {% for row in history[:10] %}
+        <tr>
+          <td>{{ row['id'] }}</td>
+          <td>{{ row['date'][:16] }}</td>
+          <td>
+            <span class="badge {% if 'LIKELY' in row['prediction'] %}badge-green{% else %}badge-red{% endif %}">
+              {{ row['prediction'] }}
+            </span>
+          </td>
+          <td><strong>{{ row['probability'] }}%</strong></td>
+          <td><a href="{{ url_for('predict_form') }}" class="tbl-btn">Re-Predict</a></td>
+        </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div class="empty-state">
+      <div class="es-icon">🎯</div>
+      <h3>No predictions yet!</h3>
+      <p>Take your first placement prediction test.</p>
+      <a href="{{ url_for('predict_form') }}" class="btn-primary">Start Now</a>
+    </div>
+    {% endif %}
+  </div>
+
+</div>
+</body>
+</html>

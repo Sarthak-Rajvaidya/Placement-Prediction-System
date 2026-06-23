@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Manage Students – PlaceAI Admin</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="dash-body">
+
+<nav class="dash-nav admin-nav">
+  <div class="nav-brand">🔐 Admin Panel</div>
+  <div class="nav-center">Manage Students</div>
+  <div class="nav-links">
+    <a href="{{ url_for('admin_dashboard') }}" class="nav-btn">Dashboard</a>
+    <a href="{{ url_for('admin_logout') }}" class="nav-btn nav-btn-outline">Logout</a>
+  </div>
+</nav>
+
+<div class="dash-container">
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+  {% for cat, msg in messages %}
+  <div class="alert alert-{{ cat }}">{{ msg }}</div>
+  {% endfor %}
+  {% endwith %}
+
+  <div class="dash-welcome">
+    <h1>👥 Registered Students</h1>
+    <p>Total: <strong>{{ students|length }}</strong> students</p>
+  </div>
+
+  <div class="dashboard-box">
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr><th>ID</th><th>Name</th><th>Email</th><th>Roll No</th><th>Branch</th><th>Year</th><th>Joined</th><th>Action</th></tr>
+        </thead>
+        <tbody>
+        {% for s in students %}
+        <tr>
+          <td>{{ s['id'] }}</td>
+          <td>{{ s['name'] }}</td>
+          <td>{{ s['email'] }}</td>
+          <td>{{ s['roll_no'] or '—' }}</td>
+          <td>{{ s['branch'] or '—' }}</td>
+          <td>{{ s['year'] or '—' }}</td>
+          <td>{{ s['created_at'][:10] }}</td>
+          <td>
+            <a href="{{ url_for('delete_student', sid=s['id']) }}"
+               onclick="return confirm('Delete student and all their predictions?')"
+               class="tbl-btn tbl-btn-danger">Delete</a>
+          </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+</body>
+</html>

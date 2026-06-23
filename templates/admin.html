@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Admin Dashboard – PlaceAI</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="dash-body">
+
+<nav class="dash-nav admin-nav">
+  <div class="nav-brand">🔐 Admin Panel</div>
+  <div class="nav-center">Placement Analytics Dashboard</div>
+  <div class="nav-links">
+    <a href="{{ url_for('admin_students') }}" class="nav-btn">Manage Students</a>
+    <a href="{{ url_for('admin_logout') }}" class="nav-btn nav-btn-outline">Logout</a>
+  </div>
+</nav>
+
+<div class="dash-container">
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+  {% for cat, msg in messages %}
+  <div class="alert alert-{{ cat }}">{{ msg }}</div>
+  {% endfor %}
+  {% endwith %}
+
+  <div class="dash-welcome">
+    <h1>📊 Placement Analytics Dashboard</h1>
+    <p>Logged in as: <strong>{{ session.admin_name }}</strong></p>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-icon">👥</div>
+      <div class="stat-num">{{ total_students }}</div>
+      <div class="stat-label">Registered Students</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">📊</div>
+      <div class="stat-num">{{ total_predictions }}</div>
+      <div class="stat-label">Total Predictions</div>
+    </div>
+    <div class="stat-card stat-card-green">
+      <div class="stat-icon">✅</div>
+      <div class="stat-num">{{ total_placed }}</div>
+      <div class="stat-label">Likely Placed</div>
+    </div>
+    <div class="stat-card stat-card-red">
+      <div class="stat-icon">❌</div>
+      <div class="stat-num">{{ total_not_placed }}</div>
+      <div class="stat-label">Need Improvement</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">📈</div>
+      <div class="stat-num">{{ average_probability }}%</div>
+      <div class="stat-label">Avg Probability</div>
+    </div>
+    <div class="stat-card stat-card-blue">
+      <div class="stat-icon">🏆</div>
+      <div class="stat-num">{{ placement_rate }}%</div>
+      <div class="stat-label">Success Rate</div>
+    </div>
+  </div>
+
+  <!-- Top candidate -->
+  {% if top_candidate %}
+  <div class="top-candidate-card">
+    <div class="tc-icon">🏆</div>
+    <div>
+      <h3>Top Candidate</h3>
+      <h2>{{ top_candidate['name'] }}</h2>
+      <p>{{ top_candidate['probability'] }}% Placement Probability</p>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Charts -->
+  <div class="chart-grid">
+    <div class="dashboard-box">
+      <h2>📈 Probability Trend</h2>
+      <canvas id="trendChart" height="120"></canvas>
+    </div>
+    <div class="dashboard-box">
+      <h2>🍩 Placed vs Not Placed</h2>
+      <canvas id="doughnutChart" height="120"></canvas>
+    </div>
+  </div>
+
+  <div class="dashboard-box" style="margin-bottom:25px">
+    <h2>📚 Academic Performance Distribution</h2>
+    <canvas id="degreeChart" height="80"></canvas>
+  </div>
+
+  <!-- Predictions Table -->
+  <div class="dashboard-box">
+    <h2>📋 All Predictions</h2>
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr><th>ID</th><th>Student</th><th>Email</th><th>Prediction</th><th>Probability</th><th>Date</th><th>Action</th></tr>
+        </thead>
+        <tbody>
+        {% for row in rows %}
+        <tr>
+          <td>{{ row['id'] }}</td>
+          <td>{{ row['name'] }}</td>
+          <td>{{ row['email'] }}</td>
+          <td>
+            <span class="badge {% if 'LIKELY' in row['prediction'] %}badge-green{% else %}badge-red{% endif %}">
+              {{ 'Placed' if 'LIKELY' in row['prediction'] else 'Not Placed' }}
+            </span>
+          </td>
+          <td><strong>{{ row['probability'] }}%</strong></td>
+          <td>{{ row['date'][:16] }}</td>
+          <td>
+            <a href="{{ url_for('delete_prediction', pid=row['id']) }}"
+               onclick="return confirm('Delete this prediction?')" class="tbl-btn tbl-btn-danger">Delete</a>
+          </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const labels = {{ trend_labels|tojson }};
+const values = {{ trend_values|tojson }};
+
+new Chart(document.getElementById('trendChart'), {
+  type: 'line',
+  data: {
+    labels, datasets: [{
+      label: 'Placement Probability',
+      data: values, borderWidth: 3, fill: true,
+      borderColor: '#2563eb', backgroundColor: 'rgba(37,99,235,0.08)',
+      tension: 0.4, pointRadius: 5
+    }]
+  },
+  options: { responsive:true, scales:{ y:{ min:0, max:100 } } }
+});
+
+new Chart(document.getElementById('doughnutChart'), {
+  type: 'doughnut',
+  data: {
+    labels: ['Likely Placed','Need Improvement'],
+    datasets: [{
+      data: [{{ total_placed }}, {{ total_not_placed }}],
+      backgroundColor: ['#22c55e','#ef4444'],
+      borderWidth: 2
+    }]
+  },
+  options: { responsive: true, plugins:{ legend:{ position:'bottom' } } }
+});
+
+const db = {{ degree_buckets|tojson }};
+new Chart(document.getElementById('degreeChart'), {
+  type: 'bar',
+  data: {
+    labels: Object.keys(db),
+    datasets: [{
+      label: 'Students by Degree %',
+      data: Object.values(db),
+      backgroundColor: ['#ef4444','#f97316','#3b82f6','#22c55e'],
+      borderRadius: 6
+    }]
+  },
+  options: { responsive:true, scales:{ y:{ beginAtZero:true } } }
+});
+</script>
+</body>
+</html>

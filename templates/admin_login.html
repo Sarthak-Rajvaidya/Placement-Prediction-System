@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Admin Login – PlaceAI</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="auth-body admin-auth-body">
+<div class="auth-card">
+  <div class="auth-header">
+    <div class="auth-logo admin-logo">🔐</div>
+    <h1>Admin Panel</h1>
+    <p>Placement Management System</p>
+  </div>
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+  {% for cat, msg in messages %}
+  <div class="alert alert-{{ cat }}">{{ msg }}</div>
+  {% endfor %}
+  {% endwith %}
+
+  <form action="{{ url_for('admin_login') }}" method="POST">
+    <div class="form-group">
+      <label>Username</label>
+      <input type="text" name="username" placeholder="admin" required>
+    </div>
+    <div class="form-group">
+      <label>Password</label>
+      <input type="password" name="password" placeholder="••••••••" required>
+    </div>
+    <button type="submit" class="auth-btn admin-auth-btn">Login to Dashboard →</button>
+  </form>
+
+  <div class="auth-footer">
+    <div class="demo-box">
+      <strong>Admin Credentials:</strong><br>
+      Username: admin &nbsp;|&nbsp; Password: admin123
+    </div>
+    <p><a href="{{ url_for('landing') }}">← Back to Home</a></p>
+  </div>
+</div>
+</body>
+</html>

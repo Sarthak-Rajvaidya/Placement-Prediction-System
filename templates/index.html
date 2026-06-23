@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Placement Prediction – PlaceAI</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="form-body">
+
+<nav class="dash-nav">
+  <div class="nav-brand">🎓 PlaceAI</div>
+  <div class="nav-center">Placement Prediction</div>
+  <div class="nav-links">
+    <a href="{{ url_for('student_dashboard') }}" class="nav-btn">Dashboard</a>
+    <a href="{{ url_for('history') }}" class="nav-btn">History</a>
+    <a href="{{ url_for('student_logout') }}" class="nav-btn nav-btn-outline">Logout</a>
+  </div>
+</nav>
+
+<div class="container">
+  <h1>🎓 Student Placement Prediction</h1>
+  <p class="form-subtitle">Fill in your academic details and skills to get your AI-powered placement prediction.</p>
+
+  <form action="/predict" method="POST">
+
+    <!-- ── Education Type ── -->
+    <div class="form-section">
+      <h2 class="section-title">🎓 Education Level</h2>
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Education Level</label>
+          <select id="education_level" name="education_level" onchange="toggleMBAFields()">
+            <option value="engineering">Engineering / Other</option>
+            <option value="mba">MBA</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Student Name</label>
+          <input type="text" name="name" value="{{ session.student_name }}" required>
+        </div>
+        <div class="form-group">
+          <label>Gender</label>
+          <select name="gender">
+            <option value="M">Male</option>
+            <option value="F">Female</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Work Experience</label>
+          <select name="workex">
+            <option value="No">No</option>
+            <option value="Yes">Yes</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Academic ── -->
+    <div class="form-section">
+      <h2 class="section-title">📚 Academic Information</h2>
+      <div class="form-grid">
+        <div class="form-group">
+          <label>SSC Percentage (%)</label>
+          <input type="number" step="0.01" min="0" max="100" name="ssc_p" placeholder="e.g. 78.5" required>
+        </div>
+        <div class="form-group">
+          <label>SSC Board</label>
+          <select name="ssc_b">
+            <option value="Central">Central</option>
+            <option value="Others">Others</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>HSC Percentage (%)</label>
+          <input type="number" step="0.01" min="0" max="100" name="hsc_p" placeholder="e.g. 80.0" required>
+        </div>
+        <div class="form-group">
+          <label>HSC Board</label>
+          <select name="hsc_b">
+            <option value="Central">Central</option>
+            <option value="Others">Others</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>HSC Stream</label>
+          <select name="hsc_s">
+            <option value="Science">Science</option>
+            <option value="Commerce">Commerce</option>
+            <option value="Arts">Arts</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Degree Percentage (%)</label>
+          <input type="number" step="0.01" min="0" max="100" name="degree_p" placeholder="e.g. 72.0" required>
+        </div>
+        <div class="form-group">
+          <label>Degree Type</label>
+          <select name="degree_t">
+            <option value="Sci&Tech">Science & Technology</option>
+            <option value="Comm&Mgmt">Commerce & Management</option>
+            <option value="Others">Others</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Employability Test %</label>
+          <input type="number" step="0.01" min="0" max="100" name="etest_p" placeholder="e.g. 65.0" required>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── MBA ── -->
+    <div id="mba_fields" class="form-section" style="display:none">
+      <h2 class="section-title">🏫 MBA Information</h2>
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Specialisation</label>
+          <select name="specialisation">
+            <option value="Mkt&Fin">Marketing & Finance</option>
+            <option value="Mkt&HR">Marketing & HR</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>MBA Percentage (%)</label>
+          <input type="number" step="0.01" min="0" max="100" name="mba_p" placeholder="e.g. 68.0">
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Skills ── -->
+    <div class="form-section">
+      <h2 class="section-title">⭐ Skill Assessment</h2>
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Technical Skills (1–10)</label>
+          <input type="number" name="skills_rating" min="1" max="10" value="5">
+        </div>
+        <div class="form-group">
+          <label>DSA Rating (1–10)</label>
+          <input type="number" name="dsa_rating" min="1" max="10" value="5">
+        </div>
+        <div class="form-group">
+          <label>Communication Skills (1–10)</label>
+          <input type="number" name="communication_rating" min="1" max="10" value="5">
+        </div>
+        <div class="form-group">
+          <label>Projects Count</label>
+          <input type="number" name="projects_count" min="0" value="0">
+        </div>
+        <div class="form-group">
+          <label>Internships Count</label>
+          <input type="number" name="internships_count" min="0" value="0">
+        </div>
+        <div class="form-group">
+          <label>Certifications Count</label>
+          <input type="number" name="certifications_count" min="0" value="0">
+        </div>
+        <div class="form-group">
+          <label>Hackathons Participated</label>
+          <input type="number" name="hackathon_count" min="0" value="0">
+        </div>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" class="submit-btn">🚀 Predict My Placement</button>
+    </div>
+
+  </form>
+</div>
+
+<script>
+function toggleMBAFields() {
+  const edu = document.getElementById('education_level').value;
+  document.getElementById('mba_fields').style.display = edu === 'mba' ? 'block' : 'none';
+}
+window.onload = toggleMBAFields;
+</script>
+</body>
+</html>

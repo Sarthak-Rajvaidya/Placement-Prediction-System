@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Prediction Result – PlaceAI</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+<nav class="dash-nav">
+  <div class="nav-brand">🎓 PlaceAI</div>
+  <div class="nav-center">Prediction Result</div>
+  <div class="nav-links">
+    <a href="{{ url_for('student_dashboard') }}" class="nav-btn">Dashboard</a>
+    <a href="{{ url_for('history') }}" class="nav-btn">History</a>
+    <a href="{{ url_for('student_logout') }}" class="nav-btn nav-btn-outline">Logout</a>
+  </div>
+</nav>
+
+<div class="result-container">
+  <div class="result-card">
+
+    <!-- TOP SUMMARY -->
+    <div class="top-summary">
+      <h1>📊 Your Placement Analysis</h1>
+      <h2 class="result-label">{{ prediction }}</h2>
+      <h3>{{ chance_level }}</h3>
+      <div class="probability" style="color: {{ progress_color }}">{{ probability }}%</div>
+      <div class="progress-bar">
+        <div class="progress-fill" style="width:{{ probability }}%; background:{{ progress_color }};"></div>
+      </div>
+      <p class="prob-caption">Placement Probability Score</p>
+    </div>
+
+    <!-- STRENGTHS & WEAKNESSES -->
+    <div class="dashboard-grid">
+      <div class="dashboard-box">
+        <h2>✅ Your Strengths</h2>
+        <div class="card-grid">
+          {% for item in strengths %}
+          <div class="info-card info-card-green">{{ item }}</div>
+          {% endfor %}
+        </div>
+      </div>
+      <div class="dashboard-box">
+        <h2>⚡ Areas to Improve</h2>
+        <div class="card-grid">
+          {% for item in weaknesses %}
+          <div class="info-card info-card-orange">{{ item }}</div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+
+    <!-- SKILL METERS & RADAR -->
+    <div class="dashboard-grid">
+      <div class="dashboard-box">
+        <h2>📊 Skill Strength Meter</h2>
+        <div class="skill">
+          <h3>💻 Technical Skills</h3>
+          <div class="progress-bar"><div class="progress-fill" style="width:{{ technical_skill_percent }}%; background:#2563eb;"></div></div>
+          <p>{{ technical_skill_percent }}%</p>
+        </div>
+        <div class="skill">
+          <h3>🧠 DSA Skills</h3>
+          <div class="progress-bar"><div class="progress-fill" style="width:{{ dsa_percent }}%; background:#9333ea;"></div></div>
+          <p>{{ dsa_percent }}%</p>
+        </div>
+        <div class="skill">
+          <h3>🗣 Communication</h3>
+          <div class="progress-bar"><div class="progress-fill" style="width:{{ communication_percent }}%; background:#14b8a6;"></div></div>
+          <p>{{ communication_percent }}%</p>
+        </div>
+        <div class="skill">
+          <h3>🚀 Project Experience</h3>
+          <div class="progress-bar"><div class="progress-fill" style="width:{{ project_percent }}%; background:#f97316;"></div></div>
+          <p>{{ project_percent }}%</p>
+        </div>
+      </div>
+      <div class="dashboard-box">
+        <h2>📈 Candidate Radar</h2>
+        <div class="chart-container">
+          <canvas id="radarChart"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- ADVICE & CAREERS -->
+    <div class="dashboard-grid">
+      <div class="dashboard-box">
+        <h2>💡 Personalized Advice</h2>
+        <div class="card-grid">
+          {% for item in advice %}
+          <div class="info-card">{{ item }}</div>
+          {% endfor %}
+        </div>
+      </div>
+      <div class="dashboard-box">
+        <h2>🚀 Recommended Careers</h2>
+        <div class="card-grid">
+          {% for career in careers %}
+          <div class="info-card info-card-blue">{{ career }}</div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+
+    <!-- COMPANIES & SUGGESTIONS -->
+    <div class="dashboard-grid">
+      <div class="dashboard-box">
+        <h2>🏢 Target Companies</h2>
+        <div class="card-grid">
+          {% for company in companies %}
+          <div class="info-card info-card-purple">{{ company }}</div>
+          {% endfor %}
+        </div>
+      </div>
+      <div class="dashboard-box">
+        <h2>📈 Improvement Plan</h2>
+        <div class="card-grid">
+          {% for suggestion in suggestions %}
+          <div class="info-card">{{ suggestion }}</div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+
+    <hr>
+    <p class="note-text">📌 {{ note }}</p>
+
+    <div class="result-actions">
+      <a href="{{ url_for('predict_form') }}"><button class="back-btn">🔄 Predict Again</button></a>
+      <a href="{{ url_for('download_report') }}"><button class="pdf-btn">📄 Download PDF Report</button></a>
+      <a href="{{ url_for('student_dashboard') }}"><button class="dash-btn">📊 My Dashboard</button></a>
+    </div>
+
+  </div>
+</div>
+
+<script>
+new Chart(document.getElementById('radarChart'), {
+  type: 'radar',
+  data: {
+    labels: ['Technical Skills','DSA','Communication','Projects'],
+    datasets: [{
+      label: 'Your Profile',
+      data: [{{ technical_skill_percent }}, {{ dsa_percent }}, {{ communication_percent }}, {{ project_percent }}],
+      backgroundColor: 'rgba(37,99,235,0.18)',
+      borderColor: '#2563eb',
+      borderWidth: 3,
+      pointBackgroundColor: '#2563eb'
+    }]
+  },
+  options: { responsive: true, scales: { r: { min:0, max:100, ticks:{ stepSize:20 } } } }
+});
+</script>
+</body>
+</html>
